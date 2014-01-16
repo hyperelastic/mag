@@ -1,0 +1,10 @@
+#!/bin/bash
+FILES=*.JPG
+stevec=0
+
+for f in $FILES
+do
+  echo "Preimenujem $f datoteko v $(printf "%03i.jpg" "$stevec")"
+  mv "$f" "$(printf "%03i.jpg" "$stevec")"
+  stevec=$[$stevec+1]
+done
