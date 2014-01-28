@@ -4,7 +4,7 @@ Programski jezik je pretežno Python.
 
 This project encapsulates the software written for my Master Thesis. 
 It's mostly nonlinear continuum mechanics. Machine vision is an 
-additional importan part. The programming language used is python.
+additional importan part. The programming language used is Python.
 
 Hyperelastic@LublanaJeBulana
 
@@ -14,3 +14,5 @@ POTEK:
     Ti se zapisejo v datoteki "paraParat/matrikaFotoaparata" in
     "paraParat/popacenjeFotoaparata"
 2) izravnamo fotografije s skripto "izravnavaLece.py"
+3) sedaj pride cas za poravnavo slik
+2

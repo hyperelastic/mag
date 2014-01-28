@@ -4,30 +4,25 @@ from glob import glob
 from PIL import Image
 from PIL.ExifTags import TAGS
 
+
 def casZajema(imeDat):
     ''' Vrne string s casom zajema hhmmss'''
     slikaPil = Image.open(imeDat)
     exif = {TAGS[k]: v for k, v in slikaPil._getexif().items() if k in TAGS}
     return(exif['DateTimeOriginal'][-8:].translate(None, ':'))
 
-print(casZajema("slikeVzorec/000.jpg"))
 
 matr = np.loadtxt("paraParat/matrikaFotoaparata")
 popac = np.loadtxt("paraParat/popacenjeFotoaparata")
-
 
 slika = cv2.imread('slikeVzorec/000.jpg')
 vis,  sir = slika.shape[:2]
 novaMatr, regZanim = cv2.getOptimalNewCameraMatrix(matr, popac,(sir,vis),1,(sir,vis))
 
-
 kartaX, kartaY = cv2.initUndistortRectifyMap(matr, popac, None,
                                                 novaMatr, (sir,vis), 5)
 
-
-
-
-slike = glob('slikeVzorec/*.jpg')
+slike = sorted(glob('slikeVzorec/*.jpg'))
 x,y,w,h = regZanim
 for sl in slike:
     imeIzravnane = sl[-7:-4] + "-" + casZajema(sl) + ".jpg"
