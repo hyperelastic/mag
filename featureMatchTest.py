@@ -17,10 +17,12 @@ ujemi = naj.match(op1,op2)
 
 
 ujemi = sorted(ujemi, key = lambda x:x.distance)
-dobri = ujemi[:10]
+dobri = ujemi[:15]
 
 notXY = np.float32([ t1[d.queryIdx].pt for d in dobri ]).reshape(-1,1,2)
-venXY = np.float32([ t2[d.queryIdx].pt for d in dobri ]).reshape(-1,1,2)
+venXY = np.float32([ t2[d.trainIdx].pt for d in dobri ]).reshape(-1,1,2)
+
+M, mask = cv2.findHomography(notXY, venXY, cv2.LMEDS, 5.0)
 
 print(notXY - venXY)
 
@@ -32,14 +34,14 @@ venSR = cv2.perspectiveTransform(notSR, M)
 print(notSR)
 print(venSR[0][0])
 
-# cv2.circle(sl1, (int(notSR[0][0][0]), int(notSR[0][0][1])), 10, (200, 200, 200), 2)
-# cv2.circle(sl2, (int(venSR[0][0][0]), int(venSR[0][0][1])), 10, (200, 200, 200), 2)
-# 
-# sl3 = cv2.drawMatches(sl1,t1,sl2,t2,dobri, flags=2)
-# 
-# #imshow()
-# cv2.namedWindow("Slikca1", cv2.WINDOW_AUTOSIZE)
-# cv2.startWindowThread()
-# cv2.imshow("Slikca1", sl3)
-# cv2.waitKey(1000)
-# cv2.destroyWindow("Slikca1")
+cv2.circle(sl1, (int(notSR[0][0][0]), int(notSR[0][0][1])), 10, (200, 200, 200), 2)
+cv2.circle(sl2, (int(venSR[0][0][0]), int(venSR[0][0][1])), 10, (200, 200, 200), 2)
+
+sl3 = cv2.drawMatches(sl1,t1,sl2,t2,dobri, flags=2)
+
+#imshow()
+cv2.namedWindow("Slikca1", cv2.WINDOW_AUTOSIZE)
+cv2.startWindowThread()
+cv2.imshow("Slikca1", sl3)
+cv2.waitKey(1000)
+cv2.destroyWindow("Slikca1")
