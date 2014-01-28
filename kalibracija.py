@@ -1,4 +1,3 @@
-
 import numpy as np
 import cv2
 import glob
@@ -25,7 +24,7 @@ for s in slike[:]:
     mala = cv2.resize(slika, (0,0), fx=pomanj, fy=pomanj, interpolation=cv2.INTER_AREA)
     uspeh, vogaliMali = cv2.findChessboardCorners(mala, (8,6),None)
 
-    # Izboljsa in doda 3d in 2d tocke, ce jih najde.
+    # Izboljsa in doda 3d in 2d tocke, ako jih najde.
     if uspeh == True:
         print("Sahovnica najdena. Izboljsujem in iscem vogale.\n")
         T3d.append(Tprip)

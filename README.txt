@@ -10,4 +10,7 @@ Hyperelastic@LublanaJeBulana
 
 
 POTEK:
-1) s skripto kalibracija.py poiscemo parametre kamere. Ti se zapisejo v
+1) s skripto kalibracija.py poiscemo parametre kamere.
+    Ti se zapisejo v datoteki "paraParat/matrikaFotoaparata" in
+    "paraParat/popacenjeFotoaparata"
+2) izravnamo fotografije s skripto "izravnavaLece.py"
