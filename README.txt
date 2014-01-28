@@ -7,3 +7,7 @@ It's mostly nonlinear continuum mechanics. Machine vision is an
 additional importan part. The programming language used is python.
 
 Hyperelastic@LublanaJeBulana
+
+
+POTEK:
+1) s skripto kalibracija.py poiscemo parametre kamere. Ti se zapisejo v
