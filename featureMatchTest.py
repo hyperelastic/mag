@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 
-sl1 = cv2.imread('slikeKoda/3.jpg', cv2.IMREAD_GRAYSCALE)
+sl1 = cv2.imread('slikeKoda/03.jpg', cv2.IMREAD_GRAYSCALE)
 sl2 = cv2.imread('slikeKoda/testnaZaFeatureMatch.jpg', cv2.IMREAD_GRAYSCALE)
 
 orb = cv2.ORB()

@@ -1,4 +1,5 @@
 ########### PORAVNAVA PRVE SLIKE ###########
+#Kode morajo bit lepo centrirane.
 #Prva slika naj bo taka, da so lepo vidne vse kode.
 #Ta skripta najprej poravna prvo sliko glede na kode z znanimi polozaji,
 #nato pa poisce se polozaje drugih kod in vse skupaj shrani v tekst.
@@ -7,35 +8,80 @@ import cv2
 import numpy as np
 from glob import glob
 
+
+
 imePrve = sorted(glob('slikeVzorec/*.jpg'))[7]
 fakPomanj = 0.4
+vOko = 80 #velikost okolice
+
+
+
+
+def izboljsajPolozajKode(koda, okolica):
+    ''' Vrne kodo z izboljsanim polozajem '''
+    
+    orb = cv2.ORB()
+    sl1 = okolica[0]
+    sl2 = koda[0]
+    t1, op1 = orb.detectAndCompute(okolica[0],None)
+    t2, op2 = orb.detectAndCompute(koda[0],None)
+    naj = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+    ujemi = naj.match(op1,op2)
+    ujemi = sorted(ujemi, key = lambda x:x.distance)
+
+    notXY = np.float32([ t1[d.queryIdx].pt for d in ujemi[:15] ]).reshape(-1,1,2)
+    venXY = np.float32([ t2[d.trainIdx].pt for d in ujemi[:15] ]).reshape(-1,1,2)
+    M, void = cv2.findHomography(notXY, venXY, cv2.LMEDS, 5.0)
+
+    notSR = np.float32([x/2 for x in okolica[0].shape]).reshape(-1,1,2)
+    venSR = cv2.perspectiveTransform(notSR, M)
+    delta = [kon - zac/2 for (zac, kon) in zip(koda[0].shape, venSR[0][0])]
+    print(delta)
+    
+#     cv2.circle(okolica[0], (int(notSR[0][0][0]), int(notSR[0][0][1])), 3, (250, 250, 100), 2)
+#     cv2.circle(koda[0], (int(venSR[0][0][0]), int(venSR[0][0][1])), 3, (250, 250, 100), 2)
+#     sl3 = cv2.drawMatches(okolica[0], t1, koda[0], t2, ujemi[:15], flags=2)
+#     cv2.imshow("Izboljsava", sl3)
+#     cv2.waitKey(500)
+#     cv2.destroyAllWindows()
+
+
+
 
 prva = cv2.imread(imePrve, cv2.IMREAD_GRAYSCALE)
 prvaMala = cv2.resize(prva, (0,0), fx=fakPomanj, fy=fakPomanj, interpolation=cv2.INTER_AREA)
 
 kode = {}
+kodeMale = {}
 imenaSlikKod = glob('slikeKoda/[0-20]*.jpg')
 for iSK in imenaSlikKod: #kode[ime_kode] = [slika, [sred1, sred2]]
     koda = cv2.imread(iSK, cv2.IMREAD_GRAYSCALE)
+    kode[int(iSK[-6:-4])] = (koda, [x/2. for x in koda.shape])
     koda = cv2.resize(koda, (0,0), fx=fakPomanj, fy=fakPomanj, interpolation=cv2.INTER_AREA)
-    kode[int(iSK[-6:-4])] = (koda, tuple([x/2. for x in koda.shape]))
+    kodeMale[int(iSK[-6:-4])] = (koda, [x/2. for x in koda.shape])
 
 polozaji = {}
-for i in kode:
-    res = cv2.matchTemplate(prvaMala,kode[i][0],cv2.TM_SQDIFF)
+for i in kodeMale:
+    res = cv2.matchTemplate(prvaMala,kodeMale[i][0],cv2.TM_SQDIFF)
     void, void, zgorajLevo, void = cv2.minMaxLoc(res)
-    sredinaMala = tuple([int(x+y) for (x, y) in zip(kode[i][1], zgorajLevo)])
-    polozaji[i] = tuple([int(s/fakPomanj) for s in sredinaMala])
-    cv2.circle(prvaMala, sredinaMala, 12, 255, 1, cv2.LINE_AA)
-    cv2.putText(prvaMala, str(i), sredinaMala, cv2.FONT_HERSHEY_SIMPLEX, fakPomanj, 255)
+    sredinaMala = [int(x+y) for (x, y) in zip(kodeMale[i][1], zgorajLevo)]
+    polozaji[i] = [int(s/fakPomanj) for s in sredinaMala]
+    cv2.circle(prvaMala, tuple(sredinaMala), 12, 255, 1, cv2.LINE_AA)
+    cv2.putText(prvaMala, str(i), tuple(sredinaMala), cv2.FONT_HERSHEY_SIMPLEX, fakPomanj, 255)
 
+# cv2.imshow('slika', prvaMala)
+# cv2.waitKey(5000)
+# cv2.destroyAllWindows()
 
-cv2.imshow('slika', prvaMala)
-cv2.waitKey(1000)
-cv2.destroyAllWindows()
+okolice = {}
+for i in range(3, 11):
+    xSr, ySr = polozaji[i][0], polozaji[i][1]
+    okolice[i] = (prva[ySr-vOko:ySr+vOko, xSr-vOko:xSr+vOko], (xSr, ySr))
 
-#sedaj je na vrsti izboljsava iskanja polozajev
-
+for i in okolice:
+    print(i)
+    izboljsajPolozajKode(kode[i], okolice[i])
+    
 
 
 
