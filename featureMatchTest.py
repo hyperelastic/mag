@@ -22,6 +22,8 @@ dobri = ujemi[:15]
 notXY = np.float32([ t1[d.queryIdx].pt for d in dobri ]).reshape(-1,1,2)
 venXY = np.float32([ t2[d.trainIdx].pt for d in dobri ]).reshape(-1,1,2)
 
+print(notXY[0])
+
 M, void = cv2.findHomography(notXY, venXY, cv2.LMEDS, 5.0)
 
 
