@@ -69,7 +69,7 @@ for koda, kodaMala in zip(kode, kodeMale):
     res = cv2.matchTemplate(prvaMala, kodaMala[0], cv2.TM_SQDIFF)
     void, void, zgorajLevo, void = cv2.minMaxLoc(res)
     sredinaMala = [int(x/2+y) for (x, y) in zip(kodaMala[0].shape, zgorajLevo)]
-    sredinaMala = [x+y for x, y in zip(sredinaMala, [5, 10])] ### ZA TEST DELOVANJA IZBOLJSAVEPOLOZAJA
+#     sredinaMala = [x+y for x, y in zip(sredinaMala, [5, 10])] ### ZA TEST DELOVANJA IZBOLJSAVEPOLOZAJA
     kodaMala[2] = [int(s) for s in sredinaMala]
     koda[2] = [int(s/fakPomanj) for s in sredinaMala]
     cv2.putText(prvaMala, str(kodaMala[1]), tuple(kodaMala[2]),
@@ -86,14 +86,13 @@ for koda in kode:
 for okolica, koda, kodaMala in zip(okolice, kode, kodeMale):
     koda = izboljsajPolozajKode(koda, okolica)
     kodaMala[2] = [int(k*fakPomanj) for k in koda[2]]
-    cv2.circle(prvaMala, tuple(kodaMala[2]), 3, 255, 1, cv2.LINE_AA)
-    print("Lokacija kode " + str(kodaMala[1]) + " je:")
+#     cv2.circle(prvaMala, tuple(kodaMala[2]), 3, 255, 1, cv2.LINE_AA)
+    print("Natancen polozaj kode " + str(kodaMala[1]) + " je:")
     print(koda[2])
-    print("\n")
 
-cv2.imshow('slika', prvaMala)
-cv2.waitKey(5000)
-cv2.destroyAllWindows()
+# cv2.imshow('slika', prvaMala)
+# cv2.waitKey(5000)
+# cv2.destroyAllWindows()
 
 
 
