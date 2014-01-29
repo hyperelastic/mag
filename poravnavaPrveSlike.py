@@ -1,20 +1,54 @@
-
+########### PORAVNAVA PRVE SLIKE ###########
+#Prva slika naj bo taka, da so lepo vidne vse kode.
+#Ta skripta najprej poravna prvo sliko glede na kode z znanimi polozaji,
+#nato pa poisce se polozaje drugih kod in vse skupaj shrani v tekst.
 
 import cv2
 import numpy as np
 from glob import glob
 
+imePrve = sorted(glob('slikeVzorec/*.jpg'))[7]
+fakPomanj = 0.4
+
+prva = cv2.imread(imePrve, cv2.IMREAD_GRAYSCALE)
+prvaMala = cv2.resize(prva, (0,0), fx=fakPomanj, fy=fakPomanj, interpolation=cv2.INTER_AREA)
+
+# cv2.imshow('slika', prvaMala)
+# cv2.waitKey(800)
+# cv2.destroyAllWindows()
 
 kode = {}
+imenaSlikKod = glob('slikeKoda/[0-20]*.jpg')
 for iSK in imenaSlikKod: #kode[ime_kode] = [slika, [sred1, sred2]]
-    slika = cv2.imread(iSK, cv2.IMREAD_GRAYSCALE)
-    kode[int(iSK[-6:-4])] = (slika, [x/2. for x in slika.shape])
+    koda = cv2.imread(iSK, cv2.IMREAD_GRAYSCALE)
+    koda = cv2.resize(koda, (0,0), fx=fakPomanj, fy=fakPomanj, interpolation=cv2.INTER_AREA)
+    kode[int(iSK[-6:-4])] = (koda, tuple([x/2. for x in koda.shape]))
 
+# for i in kode:
+#     print i
+#     cv2.imshow('slika', kode[i][0])
+#     cv2.waitKey(100)
+# cv2.destroyAllWindows()
+
+polozaji = {}
 for i in kode:
-    cv2.imshow('slika', kode[i][0])
-    cv2.waitKey(500)
+    res = cv2.matchTemplate(prvaMala,kode[i][0],cv2.TM_SQDIFF)
+    void, void, zgorajLevo, void = cv2.minMaxLoc(res)
+    sredinaMala = tuple([int(x+y) for (x, y) in zip(kode[i][1], zgorajLevo)])
+    polozaji[i] = tuple([int(s/fakPomanj) for s in sredinaMala])
+    cv2.circle(prvaMala, sredinaMala, 12, 255, 1, cv2.LINE_AA)
+    cv2.putText(prvaMala, str(i), sredinaMala, cv2.FONT_HERSHEY_SIMPLEX, fakPomanj, 255)
+
+
+cv2.imshow('slika', prvaMala)
+cv2.waitKey(30000)
 cv2.destroyAllWindows()
-    
+
+
+
+
+
+
 
 
 
@@ -73,7 +107,7 @@ cv2.destroyAllWindows()
 #         Izrez.__init__(self, imeDatSlike)
 #         
 #     def lociranjePovsod(self, oknoPodPix):
-#         ujem = cv2.matchTemplate(Slika.siva, self.skrcenaKoda, cv.CV_TM_SQDIFF_NORMED)
+#         ujem = cv2.chTemplate(Slika.siva, self.skrcenaKoda, cv.CV_TM_SQDIFF_NORMED)
 #         self.ocena, _,lokOkna ,_ = cv2.minMaxLoc(ujem)
 #         vsotaFaktorjev = 0.
 #         self.sredisce = np.array([0., 0.])
