@@ -3,7 +3,8 @@
 #   Prva slika naj bo taka, da so lepo vidne vse kode.
 #   Ta skripta najprej poravna prvo sliko glede na kode z znanimi fiz. polozaji,
 #nato s homografijo oceni se fiz. polozaje drugih kod in vse skupaj shrani v
-#besedilno datoteko.
+#besedilno datoteko paraParat/lokacijeKod. Poleg tega shrani parameter fakPomanj,
+#ki doloca merilo v datoteko "paraParat/faktorPomanjsanjaSlike".
 
 import cv2
 import numpy as np
@@ -21,15 +22,15 @@ vOko = 70           #velikost okolice kode za natancno iskanje
 def izboljsajPolozajKode(koda, okolica):
     ''' Vrne kodo z izboljsanim polozajem '''
     
-    orb = cv2.ORB()
+    orb = cv2.ORB(50, 2, 5)
     t1, op1 = orb.detectAndCompute(okolica[0],None)
     t2, op2 = orb.detectAndCompute(koda[0],None)
     naj = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
     ujemi = naj.match(op1,op2)
     ujemi = sorted(ujemi, key = lambda x:x.distance)
 
-    notXY = np.array([ t1[d.queryIdx].pt for d in ujemi[:6] ])
-    venXY = np.array([ t2[d.trainIdx].pt for d in ujemi[:6] ])
+    notXY = np.array([ t1[d.queryIdx].pt for d in ujemi[:3] ])
+    venXY = np.array([ t2[d.trainIdx].pt for d in ujemi[:3] ])
     premik = np.average(notXY-venXY, axis=0)
     stDevPremik = np.std(notXY-venXY, axis=0)
     
@@ -46,9 +47,9 @@ def izboljsajPolozajKode(koda, okolica):
                                 int(srKodeNaOkolici[1])),
                                     8, 255, 1, cv2.LINE_AA)
 
-    sl3 = cv2.drawMatches(okolica[0], t1, koda[0], t2, ujemi[:6], 200, flags=2)
+    sl3 = cv2.drawMatches(okolica[0], t1, koda[0], t2, ujemi[:3], 200, flags=2)
     cv2.imshow("Izboljsava", sl3)
-    cv2.waitKey(1000)
+    cv2.waitKey(500)
     
     return(koda)
 
@@ -127,12 +128,28 @@ for koda in kode:
 vhodneKoordinateVseh = np.float32(vhodneKoordinateVseh).reshape(-1,1,2)
 fizKoordinateVseh = cv2.perspectiveTransform(vhodneKoordinateVseh, M)
 print fizKoordinateVseh[:,0,:]
+
+
+
+prvaNova = cv2.warpPerspective(prva, M, (int(3698+120*merilo), int(2400+120*merilo)))
+for fk in fizKoordinateVseh[:, 0, :]:
+    cv2.circle(prvaNova, tuple(fk), 8, 255, 1, cv2.LINE_AA)
+
+
+
+cv2.imwrite("prvaNova.jpg", prvaNova)
+
+
 np.savetxt("paraParat/lokacijeKod", fizKoordinateVseh[:,0,:])
 np.savetxt("paraParat/faktorPomanjsanjaSlike", [fakPomanj])
 
 
-# prvaNova = cv2.warpPerspective(prva, M, (int(3698+120*merilo), int(2400+120*merilo)))
-# cv2.imwrite('prvaNova.jpg', prvaNova)
+
+
+
+
+
+
 
 
 
