@@ -3,13 +3,23 @@ import numpy as np
 from glob import glob
 from PIL import Image
 from PIL.ExifTags import TAGS
-
+from re import sub
 
 def casZajema(imeDat):
     ''' Vrne string s casom zajema hhmmss'''
     slikaPil = Image.open(imeDat)
     exif = {TAGS[k]: v for k, v in slikaPil._getexif().items() if k in TAGS}
-    return(exif['DateTimeOriginal'][-8:].translate(None, ':'))
+    print(exif['DateTimeOriginal'][-8:])
+    return(sub(':', '', exif['DateTimeOriginal'][-8:]))
+
+
+
+
+#'''Tukaj vnesi ime mape, od kjer naj izravnam slike'''
+imeMapeAbs = '/home/klmn/SlikeMag/vzmet2'
+koncnicaDatotek = '.JPG'
+
+
 
 
 matr = np.loadtxt("paraParat/matrikaFotoaparata")
@@ -22,15 +32,11 @@ novaMatr, regZanim = cv2.getOptimalNewCameraMatrix(matr, popac,(sir,vis),1,(sir,
 kartaX, kartaY = cv2.initUndistortRectifyMap(matr, popac, None,
                                                 novaMatr, (sir,vis), 5)
 
-slike = sorted(glob('slikeVzorec/*.jpg'))
+slike = sorted(glob(imeMapeAbs + '/*' + koncnicaDatotek))
 x,y,w,h = regZanim
-for sl in slike:
-    imeIzravnane = sl[-7:-4] + "-" + casZajema(sl) + ".jpg"
+for j, sl in enumerate(slike):
+    imeIzravnane = ("%03d" % j) + "-" + casZajema(sl) + ".jpg"
     print("Izravnavam sliko " + imeIzravnane)
     slikaOdpac = cv2.remap(cv2.imread(sl), kartaX, kartaY, cv2.INTER_LINEAR)
     slikaOdpac = slikaOdpac[y:y+h, x:x+w]
     cv2.imwrite("slikeIzravnane/" + imeIzravnane, slikaOdpac)
-#     mala = cv2.resize(slikaOdpac, (0,0), fx=0.4, fy=0.4, interpolation=cv2.INTER_AREA)
-#     cv2.imshow('slikaOdpac', mala)
-#     cv2.waitKey(400)
-# #     cv2.destroyAllWindows()

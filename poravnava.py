@@ -1,133 +1,102 @@
-########### PORAVNAVA ###########
-#   Zahteva paraParat/lokacijeKod in paraParat/faktorPomanjsanjaSlike
+########### PORAVNAVA STIRI###########
+#   Zahteva paraParat/lokKodBodoce in paraParat/faktorPomanjsanjaSlike
 #   Ta skripta najprej poravna prvo sliko glede na kode z znanimi fiz. polozaji,
-
-
-
-
-
-
-###IDEJA: KAJ PA, CE BI HOMOGRAFIJO OCENIL KAR IZ POVEZAV V OKOLICI KOD?###
-
-
-
 
 
 import cv2
 import numpy as np
 from glob import glob
+cv2.namedWindow('Prikaz', flags=cv2.WINDOW_KEEPRATIO)
 
-lokacijeKod = np.loadtxt("paraParat/lokacijeKod")
-merilo = np.loadtxt("paraParat/faktorPomanjsanjaSlike")
+
+def pokazi(slika, cas):
+    cv2.imshow('Prikaz', slika)
+    cv2.waitKey(cas)
+
+
+
+#'''Tukaj vnesi ime mape, kamor spadajo izravnane slike'''
+imeIzhodneMapeRel = './slikePoravnane/vzmet2'
+
+
+
+
+lokKodBodoce = np.loadtxt("paraParat/lokacijeKod")
+lokKodBodoce = np.array([lokKodBodoce[i] for i in [3, 4, 7, 8]])
+merilo = np.loadtxt("paraParat/merilo")
 fakPom = 0.2        #za grobo iskanje
-vOko = 70           #velikost okolice kode za natancno iskanje
-
-
-
-def izboljsajPolozajKode(koda, okolica):
-    ''' Vrne kodo z izboljsanim polozajem '''
-    
-    orb = cv2.ORB(50, 2, 5)
-    t1, op1 = orb.detectAndCompute(okolica[0],None)
-    t2, op2 = orb.detectAndCompute(koda[0],None)
-    naj = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-    ujemi = naj.match(op1,op2)
-    ujemi = sorted(ujemi, key = lambda x:x.distance)
-
-    notXY = np.array([ t1[d.queryIdx].pt for d in ujemi[:3] ])
-    venXY = np.array([ t2[d.trainIdx].pt for d in ujemi[:3] ])
-    premik = np.average(notXY-venXY, axis=0)
-    stDevPremik = np.std(notXY-venXY, axis=0)
-    
-    delta = premik - (np.array(okolica[0].shape) - np.array(koda[0].shape))/2
-    koda[2] = [x+d for x, d in zip(koda[2], delta)]
-    
-#     print("premik"); print(premik)
-#     print("stDevPremik"); print(stDevPremik)
-#     print("delta"); print(delta)
-#     print("\n")
-#     srKodeNaKodi = [x/2 for x in koda[0].shape]
-#     srKodeNaOkolici = tuple([sr+d for sr, d in zip(srKodeNaKodi, premik)])
-#     cv2.circle(okolica[0], (int(srKodeNaOkolici[0]),
-#                                 int(srKodeNaOkolici[1])),
-#                                     8, 255, 1, cv2.LINE_AA)
-# 
-#     sl3 = cv2.drawMatches(okolica[0], t1, koda[0], t2, ujemi[:3], 200, flags=2)
-#     cv2.imshow("Izboljsava", sl3)
-#     cv2.waitKey(500)
-    
-    return(koda)
-
-
+vOko = 80           #velikost okolice kode za natancno iskanje
 
 imenaSlikKod = sorted(glob('slikeKoda/[0-20]*.jpg'))
 kode = []
 kodeM = []
-clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
-for iSK in imenaSlikKod:
-    koda = cv2.imread(iSK, cv2.IMREAD_GRAYSCALE)
-    kode.append([koda, int(iSK[-6:-4]), [0, 0]])
-    koda = cv2.resize(koda, (0,0), fx=fakPom, fy=fakPom, interpolation=cv2.INTER_AREA)
-    kodeM.append([koda, int(iSK[-6:-4]), [0, 0]]) #poManjsane
-    
+for i in [3, 4, 7, 8]:
+    '''Shrani kode v imenika kode in kodeM'''
+    slika = cv2.imread(imenaSlikKod[i], cv2.IMREAD_GRAYSCALE)
+    slika = cv2.bilateralFilter(slika, 9, 75, 75)
+    kode.append(slika)
+    slika = cv2.resize(slika, (0, 0), fx = fakPom, fy=fakPom,
+                        interpolation = cv2.INTER_AREA)
+    kodeM.append(slika)
 
-
-imenaSlik = sorted(glob('slikeIzravnane/*.jpg'))
-for iS in imenaSlik[:]:
-    sl = cv2.imread(iS); print(iS)
+imenaSlik = sorted(glob('./slikeIzravnane/*.jpg')) 
+clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+for j, iS in enumerate(imenaSlik[:]):
+    sl = cv2.imread(iS); print(iS[-14:])
     slC = cv2.imread(iS, cv2.IMREAD_GRAYSCALE)
     slC = clahe.apply(slC)
-    slCM = cv2.resize(slC, (0,0), fx=fakPom, fy=fakPom, interpolation=cv2.INTER_AREA)
+    slC = cv2.bilateralFilter(slC, 9, 75, 75)
+    #pokazi(slC, 500)
+    slCM = cv2.resize(slC, (0,0), fx=fakPom, fy=fakPom,
+                        interpolation=cv2.INTER_AREA)
+    lokKodTrenutne = [] 
+    for k, K in zip(kodeM, kode):
+        slika = cv2.matchTemplate(slCM, k, cv2.TM_SQDIFF)
+        void, void, lokPribl, void = cv2.minMaxLoc(slika)
+        lokPribl = [(i+np.shape(k)[0]/2)/fakPom for i in lokPribl]
+        slika = slC[lokPribl[1]-vOko:lokPribl[1]+vOko,
+                        lokPribl[0]-vOko:lokPribl[0]+vOko]
+        tmp = np.average(np.shape(slika))
+        slika = cv2.matchTemplate(slika, K, cv2.TM_SQDIFF)
+        void, void, lok, void = cv2.minMaxLoc(slika)
+        lok = [ (lP+l+(np.average(np.shape(K))-tmp)/2)
+                    for lP, l in zip(lokPribl, lok)]
+        lokKodTrenutne.append(lok)
+    lokKodBodoce = np.float32(lokKodBodoce).reshape(-1,1,2)
+    lokKodTrenutne = np.float32(lokKodTrenutne).reshape(-1,1,2)
+    M = cv2.getPerspectiveTransform(lokKodTrenutne, lokKodBodoce)
+
+    #'''vztrajnost - vprasanje, koliko pomaga'''
+    #if j!=0: 
+    #    M = np.add(2.0*M, Mprej)/3.0
+    #Mprej = M
+        
+    #'''prvo zvitje'''
+    slC = cv2.warpPerspective(slC, M, 
+                                (int(3698+120*merilo), int(2400+120*merilo)))
+
+    #'''premik v okolici vpetja'''
+    #if j==0: cv2.imwrite("./slikePoravnane/osnovnaC.jpg", slC)
+    slika = cv2.imread("./slikePoravnane/osnovnaC.jpg", cv2.IMREAD_GRAYSCALE)
+    slika = slika[2420:-20,1200:1700]
+    slika = cv2.matchTemplate(slC, slika, cv2.TM_SQDIFF)
+    void, void, lokZac, void = cv2.minMaxLoc(slika)
+    if abs(np.average([1200-lokZac[0], 2420-lokZac[1]]))>10.0:
+        print("Nekaj ne stima... >(")
+        cv2.imwrite(imeIzhodneMapeRel + '/' + iS[-14:-4] + 'NAP' + iS[-4:], sl)
+    else:
+        sl = cv2.warpPerspective(sl, M, 
+                                    (int(3698+120*merilo), int(2400+120*merilo)))
+        M1 = np.eye((3)); M1[0,2]=1200-lokZac[0]; M1[1,2] = 2420-lokZac[1]
+        M1 = np.float32(M1[:2,:])
+        sl = cv2.warpAffine(sl, M1,
+                                (int(3698+120*merilo), int(2400+120*merilo)))
+        cv2.imwrite(imeIzhodneMapeRel + '/' + iS[-14:], sl)
     
 
-    for koda, kodaM in zip(kode, kodeM):
-        res = cv2.matchTemplate(slCM, kodaM[0], cv2.TM_SQDIFF)
-        void, void, zgLevo, void = cv2.minMaxLoc(res)
-        sredinaM = [int(x/2+y) for (x, y) in zip(kodaM[0].shape, zgLevo)]
-#         sredinaM = [x+y for x, y in zip(sredinaM, [-2, -3])]     # ZA TEST DELOVANJA IZBOLJSAVEPOLOZAJA
-        kodaM[2] = [int(s) for s in sredinaM]
-        koda[2] = [int(s/fakPom) for s in sredinaM]
-        cv2.putText(slCM, str(kodaM[1]), tuple(kodaM[2]),
-                                    cv2.FONT_HERSHEY_SIMPLEX, fakPom, 255)
-    
-    
-    
-    kodeUpo = kode[1:] #upostevane kode
-    lokacijeKodUpo = lokacijeKod[1:] #ino ustrezne lokacije
-    okolce = []
-    for koda in kodeUpo:
-        xSr, ySr = koda[2][0], koda[2][1]
-        okolce.append([slC[ySr-vOko:ySr+vOko, xSr-vOko:xSr+vOko], [xSr, ySr]])
-
-
-
-    vhodTke = []
-    for o, koda in zip(okolce, kodeUpo):
-        koda = izboljsajPolozajKode(koda, o)
-        vhodTke.append(koda[2])
-    
-    
-    
-    vhodTke = np.float32(vhodTke).reshape(-1,1,2); print(vhodTke)
-    izhodTke = np.float32(lokacijeKodUpo).reshape(-1,1,2); print(izhodTke)
-    
-    M, maska = cv2.findHomography(vhodTke, izhodTke, cv2.RANSAC, 5)
-    
-    print(M)
-    print(maska.reshape(1,-1))
-    
-    sl2 = cv2.warpPerspective(sl, M, (int(np.max(izhodTke[:,:,0]))+180,
-                                        int(np.max(izhodTke[:,:,1]))+180))
-    
-    cv2.imwrite("slikePoravnane/"+iS[-14:], sl2)
-    
-    
-    
-    
-    
-    
 cv2.destroyAllWindows()
-    
+
+
 
 
 
