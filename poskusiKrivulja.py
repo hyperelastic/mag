@@ -8,6 +8,9 @@ clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
 clahe.apply(slC)
 #slC = cv2.bilateralFilter(slC, 5, 175, 175)
 slC = cv2.medianBlur(slC, 9)
+
+void, slC = cv2.threshold(slC, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+
 #cv2.namedWindow("Prikaz", cv2.WINDOW_NORMAL)
 cv2.imshow("Prikaz", slC[1500:,1100:])
 #slika = slC[2300:-50, 1650:1660]
