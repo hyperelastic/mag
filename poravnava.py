@@ -76,7 +76,7 @@ for j, iS in enumerate(imenaSlik[:]):
                                 (int(3698+120*merilo), int(2400+120*merilo)))
 
     #'''premik v okolici vpetja'''
-    #if j==0: cv2.imwrite("./slikePoravnane/osnovnaC.jpg", slC)
+    if j==0: cv2.imwrite("./slikePoravnane/osnovnaC.jpg", slC)
     slika = cv2.imread("./slikePoravnane/osnovnaC.jpg", cv2.IMREAD_GRAYSCALE)
     slika = slika[2420:-20,1200:1700]
     slika = cv2.matchTemplate(slC, slika, cv2.TM_SQDIFF)
