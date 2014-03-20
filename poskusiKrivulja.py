@@ -30,8 +30,9 @@ for i in range(9):
     okence = kanal1[lMaxKanal1[1]-2*radij:lMaxKanal1[1]+2*radij+1,
                         lMaxKanal1[0]-2*radij:lMaxKanal1[0]+2*radij+1]
     okence = np.fliplr(okence)
-    okence = cv2.linearPolar(okence, (2*radij, 2*radij), radij, cv2.INTER_LINEAR)
-    pas = cv2.GaussianBlur(okence[radij:-radij,-2:], (5,15), 0)
+    okence = cv2.linearPolar(okence, (2*radij, 2*radij), int(1.1*radij),
+                                cv2.INTER_LINEAR)
+    pas = cv2.GaussianBlur(okence[radij:-radij,-.2*radij-1:], (5,15), 0)
     cv2.imshow("Prikaz", pas)
     cv2.waitKey(2000)
     void, void, lMaxOkence, void = cv2.minMaxLoc(pas)
