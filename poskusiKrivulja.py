@@ -36,7 +36,7 @@ for ime in imena[155:156]:
         slOkence = np.fliplr(slOkence)
         slOkence = cv2.linearPolar(slOkence, (2*radij, 2*radij), int(1.1*radij),
                                     cv2.INTER_LINEAR)
-        slOkence = cv2.GaussianBlur(slOkence, (1, 1), 2)
+        #slOkence = cv2.GaussianBlur(slOkence, (1, 1), 2)
 
         slPas = slOkence[1.2*radij:-0.5*radij,-0.2*radij-1:]
         slTemplate = 180*np.uint8(np.ones((9,np.shape(slPas)[1])))
