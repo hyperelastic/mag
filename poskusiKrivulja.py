@@ -65,8 +65,7 @@ for ime in imena[155:156]:
         print(maxLoc)
 
         #kot = 0.5*(kot + 0.5*np.pi*(float(maxLoc-2*radij)/radij))
-        #kot =  0.5*np.pi*(float(maxLoc-2*radij)/radij)
-        kot = 0.5*(kot + 0.5*np.pi*(float(maxLoc-2*radij)/radij))
+        kot =  0.5*np.pi*(float(maxLoc-2*radij)/radij)
         zacToc = [zacToc[0]-radij*np.sin(kot), zacToc[1]+radij*np.cos(kot)]
         print("kot: " + str(kot) + "\n")
 
