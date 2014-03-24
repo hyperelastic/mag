@@ -8,7 +8,7 @@ imena = sorted(glob('./slikePoravnane/nelin/*.jpg'))
 
     
 
-for ime in imena[10:15]:
+for ime in imena[434:443]:
     print(ime)
     sl = cv2.imread(ime)
     clahe = cv2.createCLAHE(clipLimit=1.5, tileGridSize=(6,6))
@@ -21,13 +21,13 @@ for ime in imena[10:15]:
     izKan1 = [800, 2470, 1490, 3660] #samo obarvanost, izrez
     slKan1 = cv2.extractChannel(sl, 1)[izKan1[0]:izKan1[1],izKan1[2]:izKan1[3]]
 
-    zacToc = [izKan1[1]-izKan1[0]-97, 105]
+    zacToc = [izKan1[1]-izKan1[0]-97, 100]
     cv2.circle(slKan1, (zacToc[1], zacToc[0]), 1, 255, thickness=1)
 
-    #cv2.imshow("Prikaz", slKan1[1300:,:-1900])
-    #cv2.waitKey(2000)
+    cv2.imshow("Prikaz", slKan1[1300:,:-1900])
+    cv2.waitKey(2000)
     
-    radij = 15
+    radij = 10
     for j in range(1):
         slOkence = slKan1[zacToc[0]-2*radij:zacToc[0]+2*radij,
                              zacToc[1]-2*radij:zacToc[1]+2*radij]
@@ -37,19 +37,21 @@ for ime in imena[10:15]:
         #cv2.circle(slOkence, (2*radij, 2*radij), radij, 255, thickness=1, 
         #                lineType = cv2.LINE_AA)
 
-        #cv2.imshow("Prikaz", slOkence)
-        #cv2.waitKey(10000)
 
-        slPas = slOkence[1.6*radij:-1.6*radij,-0.2*radij:]
-        print(slPas)
-        slPasKvadrat = np.uint16(np.max(slPas)-slPas)**2
-        print(slPasKvadrat)
-        matPoloz = np.uint16(np.transpose(np.transpose(np.ones(np.shape(slPas)))\
-                                    *np.array(range(np.shape(slPas)[0]))))
+        slPas = slOkence[1.0*radij:-1.0*radij,-0.2*radij-1:]
+        slTemplate = 180*np.uint8(np.ones((7,np.shape(slPas)[1])))
+        slTemplate[2:5,:] = np.uint8(20+np.zeros((3,np.shape(slPas)[1])))
+
+        cv2.imshow("Prikaz", slOkence)
+        cv2.waitKey(10000)
         
-        matPoloz *= slPasKvadrat
-        povprecje = (1.0*np.sum(matPoloz))/np.sum(slPasKvadrat)
-        print(povprecje)
+        slPas = cv2.matchTemplate(slPas, slTemplate, cv2.TM_SQDIFF_NORMED)
+        #print(slPas)
+        #print(slPasKvadrat)
+        #matPoloz = np.uint16(np.transpose(np.transpose(np.ones(np.shape(slPas)))\
+        #                            *np.array(range(np.shape(slPas)[0]))))
+        #matPoloz *= slPasKvadrat
+        #povprecje = (1.0*np.sum(matPoloz))/np.sum(slPasKvadrat)
         cv2.imshow("Prikaz", slPas)
         cv2.waitKey(10000)
 
