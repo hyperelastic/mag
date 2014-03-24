@@ -28,8 +28,8 @@ for ime in imena[155:156]:
     #cv2.waitKey(2000)
     
     kot = 0
-    radij = 10
-    for j in range(194):
+    radij = 15
+    for j in range(114):
         print(j)
         slOkence = slKan1[zacToc[0]-2*radij:zacToc[0]+2*radij,
                              zacToc[1]-2*radij:zacToc[1]+2*radij]
@@ -41,18 +41,16 @@ for ime in imena[155:156]:
         slTemplate = 180*np.uint8(np.ones((9,np.shape(slPas)[1])))
         slTemplate[3:6,:] = np.uint8(40+np.zeros((3,np.shape(slPas)[1])))
 
-        #cv2.imshow("Prikaz", slOkence)
-        #cv2.waitKey(1000)
         #cv2.imshow("Prikaz", slPas)
-        #cv2.waitKey(10000)
+        #cv2.waitKey(100)
         #cv2.imshow("Prikaz", slTemplate)
         #cv2.waitKey(10000)
 
         slPas = cv2.matchTemplate(slPas, slTemplate, cv2.TM_CCORR_NORMED)
         slPas = cv2.resize(slPas, (0, 0), fx = 1, fy=5)
-        slPas = cv2.GaussianBlur(slPas, (11, 11),sigmaX=5, sigmaY=10)
+        slPas = cv2.GaussianBlur(slPas, (11, 11),sigmaX=1, sigmaY=5)
         #cv2.imshow("Prikaz", slPas)
-        #cv2.waitKey(1000)
+        #cv2.waitKey(50)
         void, void, void, maxLoc = cv2.minMaxLoc(slPas); 
         maxLoc = float(maxLoc[1])/5
 
@@ -61,11 +59,10 @@ for ime in imena[155:156]:
         #matPoloz = np.array((1,2,3,4,5))
         #matPoloz *= slPas
         #maxLoc += np.sum(matPoloz)/np.sum(slPas) - 3.
-        maxLoc += 1.5*radij+4.5     #zamik zaradi matchTemplate v velikosti slTemplate
-        print(maxLoc)
+        maxLoc += 1.5*radij+4.5-1     #zamik zaradi matchTemplate v velikosti slTemplate
 
-        #kot = 0.5*(kot + 0.5*np.pi*(float(maxLoc-2*radij)/radij))
-        kot =  0.5*np.pi*(float(maxLoc-2*radij)/radij)
+        kot = 0.05*(19*kot + 0.5*np.pi*(float(maxLoc-2*radij)/radij)) #vztrajnost
+        #kot =  0.5*np.pi*(float(maxLoc-2*radij)/radij)      #brez vztr.
         zacToc = [zacToc[0]-radij*np.sin(kot), zacToc[1]+radij*np.cos(kot)]
         print("kot: " + str(kot) + "\n")
 
@@ -76,8 +73,8 @@ for ime in imena[155:156]:
         cv2.circle(slKan1, tuple([int(zacToc[1]), 
                             int(zacToc[0])]), 2, 215, thickness=2)
         #cv2.imshow("Prikaz", slOkence)
-        #cv2.waitKey(5)
-    cv2.imshow("Prikaz", slKan1[800:,-300:-100])
+        #cv2.waitKey(50)
+    cv2.imshow("Prikaz", slKan1[800:,-1900:-1200])
     cv2.waitKey(10000)
 
 #kanal1 = cv2.extractChannel(sl, 1)
