@@ -28,41 +28,43 @@ for ime in imena[155:156]:
     #cv2.waitKey(2000)
     
     kot = 0
-    radij = 15
-    for j in range(114):
+    radij = 10
+    for j in range(129):
         print(j)
         slOkence = slKan1[zacToc[0]-2*radij:zacToc[0]+2*radij,
                              zacToc[1]-2*radij:zacToc[1]+2*radij]
         slOkence = np.fliplr(slOkence)
         slOkence = cv2.linearPolar(slOkence, (2*radij, 2*radij), int(1.1*radij),
                                     cv2.INTER_LINEAR)
+        slOkence = cv2.GaussianBlur(slOkence, (1, 1), 2)
 
-        slPas = slOkence[1.5*radij:-0.5*radij,-0.2*radij-1:]
+        slPas = slOkence[1.2*radij:-0.5*radij,-0.2*radij-1:]
         slTemplate = 180*np.uint8(np.ones((9,np.shape(slPas)[1])))
-        slTemplate[3:6,:] = np.uint8(40+np.zeros((3,np.shape(slPas)[1])))
+        slTemplate[2:7,:] = np.uint8(40+np.zeros((5,np.shape(slPas)[1])))
+        #slTemplate = cv2.GaussianBlur(slTemplate, (3, 3), 1.0)
 
         #cv2.imshow("Prikaz", slPas)
-        #cv2.waitKey(100)
+        #cv2.waitKey(1000)
         #cv2.imshow("Prikaz", slTemplate)
-        #cv2.waitKey(10000)
+        #cv2.waitKey(1000)
 
         slPas = cv2.matchTemplate(slPas, slTemplate, cv2.TM_CCORR_NORMED)
-        slPas = cv2.resize(slPas, (0, 0), fx = 1, fy=5)
-        slPas = cv2.GaussianBlur(slPas, (11, 11),sigmaX=1, sigmaY=5)
-        #cv2.imshow("Prikaz", slPas)
-        #cv2.waitKey(50)
         void, void, void, maxLoc = cv2.minMaxLoc(slPas); 
-        maxLoc = float(maxLoc[1])/5
+        maxLoc = maxLoc[1]
+        print(maxLoc)
+        konstantePolinom = np.polyfit(np.array(range(-3, 4)),
+                                        slPas[maxLoc-3:maxLoc+4, 0], 2)
+        maxLoc += -konstantePolinom[1]/2/konstantePolinom[0]
+        print(maxLoc)
+        slPas = np.hstack((slPas, 0.2*np.ones(np.shape(slPas))))
+        cv2.circle(slPas, (2, int(maxLoc)), 1, 0, thickness=0)
+        maxLoc += 1.2*radij+4.5    #zamik zaradi matchTemplate v velikosti slTemplate
+        #cv2.imshow("Prikaz", slPas)
+        #cv2.waitKey(10000)
 
-        #povprecje za natancnejsi ujem
-        #slPas = slPas[maxLoc-2:maxLoc+3, 0]
-        #matPoloz = np.array((1,2,3,4,5))
-        #matPoloz *= slPas
-        #maxLoc += np.sum(matPoloz)/np.sum(slPas) - 3.
-        maxLoc += 1.5*radij+4.5-1     #zamik zaradi matchTemplate v velikosti slTemplate
-
-        kot = 0.05*(19*kot + 0.5*np.pi*(float(maxLoc-2*radij)/radij)) #vztrajnost
-        #kot =  0.5*np.pi*(float(maxLoc-2*radij)/radij)      #brez vztr.
+        #kot = 0.05*(19*kot + 0.5*np.pi*(float(maxLoc-2*radij)/radij)) #vztrajnost
+        #kot = 0.1*(9*kot + 0.5*np.pi*(float(maxLoc-2*radij)/radij)) #vztrajnost
+        kot =  0.5*np.pi*(float(maxLoc-2*radij)/radij)      #brez vztr.
         zacToc = [zacToc[0]-radij*np.sin(kot), zacToc[1]+radij*np.cos(kot)]
         print("kot: " + str(kot) + "\n")
 
@@ -74,7 +76,7 @@ for ime in imena[155:156]:
                             int(zacToc[0])]), 2, 215, thickness=2)
         #cv2.imshow("Prikaz", slOkence)
         #cv2.waitKey(50)
-    cv2.imshow("Prikaz", slKan1[800:,-1900:-1200])
+    cv2.imshow("Prikaz", slKan1[800:,:-200])
     cv2.waitKey(10000)
 
 #kanal1 = cv2.extractChannel(sl, 1)
