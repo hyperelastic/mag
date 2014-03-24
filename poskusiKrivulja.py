@@ -8,7 +8,7 @@ imena = sorted(glob('./slikePoravnane/nelin/*.jpg'))
 
     
 
-for ime in imena[28:38]:
+for ime in imena[10:15]:
     print(ime)
     sl = cv2.imread(ime)
     clahe = cv2.createCLAHE(clipLimit=1.5, tileGridSize=(6,6))
@@ -21,26 +21,37 @@ for ime in imena[28:38]:
     izKan1 = [800, 2470, 1490, 3660] #samo obarvanost, izrez
     slKan1 = cv2.extractChannel(sl, 1)[izKan1[0]:izKan1[1],izKan1[2]:izKan1[3]]
 
-    izKan2 = [izKan1[1]-izKan1[0]-60, izKan1[1]-izKan1[0]-20, 20, 60] #za iskanje zacetka
-    slKan2 = slKan1[izKan2[0]:izKan2[1], izKan2[2]:izKan2[3]]
-    slKan2[slKan2<100] = 0; slKan2[slKan2>150] = 255
+    zacToc = [izKan1[1]-izKan1[0]-97, 105]
+    cv2.circle(slKan1, (zacToc[1], zacToc[0]), 1, 255, thickness=1)
 
-    krogi = cv2.HoughCircles(slKan2, cv2.HOUGH_GRADIENT, 2, 20, #krogi
-                                param1=10, param2=10, minRadius=8, maxRadius=12)
+    #cv2.imshow("Prikaz", slKan1[1300:,:-1900])
+    #cv2.waitKey(2000)
+    
+    radij = 15
+    for j in range(1):
+        slOkence = slKan1[zacToc[0]-2*radij:zacToc[0]+2*radij,
+                             zacToc[1]-2*radij:zacToc[1]+2*radij]
+        slOkence = np.fliplr(slOkence)
+        slOkence = cv2.linearPolar(slOkence, (2*radij, 2*radij), int(1.1*radij),
+                                    cv2.INTER_LINEAR)
+        #cv2.circle(slOkence, (2*radij, 2*radij), radij, 255, thickness=1, 
+        #                lineType = cv2.LINE_AA)
 
-    print(krogi[0,0])
+        #cv2.imshow("Prikaz", slOkence)
+        #cv2.waitKey(10000)
 
-    krogi = np.uint16(np.around(krogi))
-    for k in krogi[0,:1]: #narise kroge
-        cv2.circle(slKan1, (izKan2[2]+k[0], izKan2[0]+k[1]), k[2],
-                                 155, thickness=1, lineType=cv2.LINE_AA)
-        cv2.circle(slKan1, (k[0], izKan2[0]+k[1]), 1, 255, thickness=1)
-
-    cv2.rectangle(slKan1, (izKan2[2], izKan2[0]), (izKan2[3], izKan2[1]), 255)
-
-    cv2.imshow("Prikaz", slKan1[1300:,:-1900])
-    cv2.waitKey(20000)
-
+        slPas = slOkence[1.6*radij:-1.6*radij,-0.2*radij:]
+        print(slPas)
+        slPasKvadrat = np.uint16(np.max(slPas)-slPas)**2
+        print(slPasKvadrat)
+        matPoloz = np.uint16(np.transpose(np.transpose(np.ones(np.shape(slPas)))\
+                                    *np.array(range(np.shape(slPas)[0]))))
+        
+        matPoloz *= slPasKvadrat
+        povprecje = (1.0*np.sum(matPoloz))/np.sum(slPasKvadrat)
+        print(povprecje)
+        cv2.imshow("Prikaz", slPas)
+        cv2.waitKey(10000)
 
 #kanal1 = cv2.extractChannel(sl, 1)
 #visIzreza = 800; sirIzreza = 1500
