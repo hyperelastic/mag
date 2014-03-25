@@ -8,7 +8,7 @@ imena = sorted(glob('./slikePoravnane/nelin/*.jpg'))
 
     
 kot = 0
-for ime in imena[155:156]:
+for ime in imena[465:466]:
     print(ime)
     sl = cv2.imread(ime)
     clahe = cv2.createCLAHE(clipLimit=1.5, tileGridSize=(6,6))
@@ -82,7 +82,8 @@ for ime in imena[155:156]:
         #cv2.imshow("Prikaz", slOkence)
         #cv2.waitKey(50)
     #cv2.imshow("Prikaz", slKan1[800:,:-1200])
-    cv2.imshow("Prikaz", slKan1[800:,-1000:])
+    #cv2.imshow("Prikaz", slKan1[800:,-1000:])
+    cv2.imshow("Prikaz", slKan1[:,:-1100])
     #cv2.imshow("Prikaz", slKan1)
     cv2.waitKey(100000)
 
