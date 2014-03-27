@@ -13,6 +13,7 @@ POTEK:
 1) s skripto kalibracija.py poiscemo parametre kamere.
     Ti se zapisejo v datoteki "paraParat/matrikaFotoaparata" in
     "paraParat/popacenjeFotoaparata"
-2) izravnamo fotografije s skripto "izravnavaLece.py"
-3) sedaj pride cas za poravnavo slik
-2
+2) izravnamo fotografije s "izravnavaLece.py"
+3) poravnamo slike s "./poravnava.py"
+4) poravnamo tezavne slike s "./poravnavaTezavnih.py"
+5) poiscemo tocke s "./zajemTock.py" 
