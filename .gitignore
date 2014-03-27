@@ -1,3 +1,5 @@
 *.jpg
 *.xcf
 paraParat/*
+*.swp
+maxima/*
