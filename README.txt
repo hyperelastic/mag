@@ -4,7 +4,7 @@ Programski jezik je pretežno Python.
 
 This project encapsulates the software written for my Master Thesis. 
 It's mostly nonlinear continuum mechanics. Machine vision is an 
-additional importan part. The programming language used is Python.
+additional important part. The programming language used is Python.
 
 Hyperelastic@LublanaJeBulana
 
