@@ -1,0 +1,24 @@
+# 
+# 
+# Dokument z dolzinami vzmeti, casi zajemov in tockami.
+# 
+# Obdelane so slike v obsegu od './slikePoravnane/nelin/000-145500.jpg' do './slikePoravnane/nelin/469-150149.jpg'.
+# 
+# Podatki so shranjeni v sledeci obliki:
+# DolzinaVzmetiY[0], Cas[0], TockeY[0]
+# DolzinaVzmetiX[0], Cas[0], TockeX[0]
+# DolzinaVzmetiY[1], Cas[1], TockeY[1]
+# DolzinaVzmetiX[1], Cas[1], TockeX[1]
+# 	...
+# DolzinaVzmetiY[:], Cas[:], TockeY[:]
+# DolzinaVzmetiX[:], Cas[:], TockeX[:]
+# 
+# Koordinate x narascajo desno, y pa navzdol.
+# Ce je 'DolzinaVzmeti' pozitivna, je bil nosilec povesen preko meja slike in ni bilo mogoce zajeti vseh tock.
+# Nezajete tocke imajo koordinate -1.0.
+# 
+# 
+-624.70 145518 1573.19 1573.37 1573.50 1573.69 1574.02 1573.57 1574.58 1574.31 1575.03 1576.70
+1.00 145518 100.00 130.00 160.00 190.00 220.00 250.00 279.99 310.00 339.99 369.96
+-621.26 145519 1573.16 1573.23 1572.96 1573.55 1573.27 1573.24 1573.51 1574.20 1574.45 1574.26
+1.00 145519 100.00 130.00 160.00 190.00 220.00 250.00 280.00 309.99 339.99 370.00
