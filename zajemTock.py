@@ -10,11 +10,11 @@ np.set_printoptions(suppress=True) #onemogoci znanstveno
 
 imeTabele = './tabele/nelin.txt'
 imena = sorted(glob('./slikePoravnane/nelin/*.jpg'))
-stNiza = 5
+stNiza = 7
 nizi = [[27, 67], [97, 125],
         [149, 181], [198, 232],
         [246, 285], [296, 334],
-        [347, 285], [395, 426]]
+        [347, 385], [395, 426]]
 imenaSlikKod = sorted(glob('slikeKoda/[0-20]*.jpg'))
 vsiPodatki = []
 cv2.namedWindow("Prikaz", cv2.WINDOW_NORMAL)

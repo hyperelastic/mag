@@ -17,3 +17,5 @@ POTEK:
 3) poravnamo slike s "./poravnava.py"
 4) poravnamo tezavne slike s "./poravnavaTezavnih.py"
 5) poiscemo tocke s "./zajemTock.py" 
+6) poiscemo aproksimacijo funkcije vzmeti s "./togost.py"
+7) 
