@@ -1,7 +1,7 @@
 # 
 # Dokument s priblizno funkcijo togosti vzmeti za podrocje sil, vecjih od 0N. Funkcija je oblike:
 # sila[N] = koef[0]*dolzina[px]^2 + koef[1]*dolzina[px] + koef[2].
-# Niclo (dolzino pri pojavu sile) lahko dobis s np.roots(koef)[1]
+# Dolzino pri sila=0 lahko dobis s np.roots(koef)[1]
 # 
 -6.244353e-06
 3.015918e-02
