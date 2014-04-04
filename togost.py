@@ -26,6 +26,7 @@ np.savetxt("./tabele/funkcijaTogosti.txt", koef,
 
 plt.plot(x0, y0, 'ro')
 plt.plot(x1, y1, 'g-')
+plt.title('Graf togosti vzmeti')
 plt.xlabel('Dolzina vzmeti, slikovne tocke')
 plt.ylabel('Sila v vzmeti, N')
 plt.show()
